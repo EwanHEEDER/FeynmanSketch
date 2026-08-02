@@ -82,4 +82,53 @@ final class DiagramGraphTests: XCTestCase {
         }
     }
 
+    func testVertexRoleInterior() {
+        // Given
+        var graph = DiagramGraph()
+        let vertex1 = graph.addVertex(at: Point(x: 0, y: 0), label: "A")
+        let vertex2 = graph.addVertex(at: Point(x: 1, y: 1), label: "B")
+        let vertex3 = graph.addVertex(at: Point(x: 2, y: 2), label: "C")
+
+        // When
+        _ = graph.addLine(startVertexID: vertex1.id, endVertexID: vertex2.id, type: .fermion)
+        _ = graph.addLine(startVertexID: vertex2.id, endVertexID: vertex3.id, type: .fermion)
+
+        // Then
+        XCTAssertEqual(graph.role(of: vertex2.id), .interior)
+    }
+
+    func testVertexRoleIncoming() {
+        // Given
+        var graph = DiagramGraph()
+        let vertex1 = graph.addVertex(at: Point(x: 0, y: 0), label: "A")
+        let vertex2 = graph.addVertex(at: Point(x: 1, y: 1), label: "B")
+
+        // When
+        _ = graph.addLine(startVertexID: vertex1.id, endVertexID: vertex2.id, type: .fermion)
+
+        // Then
+        XCTAssertEqual(graph.role(of: vertex1.id), .incoming)
+    }
+
+    func testVertexRoleOutgoing() {
+        // Given
+        var graph = DiagramGraph()
+        let vertex1 = graph.addVertex(at: Point(x: 0, y: 0), label: "A")
+        let vertex2 = graph.addVertex(at: Point(x: 1, y: 1), label: "B")
+
+        // When
+        _ = graph.addLine(startVertexID: vertex1.id, endVertexID: vertex2.id, type: .fermion)
+
+        // Then
+        XCTAssertEqual(graph.role(of: vertex2.id), .outgoing)
+    }
+
+    func testVertexRoleIsolated() {
+        // Given
+        var graph = DiagramGraph()
+        let vertex1 = graph.addVertex(at: Point(x: 0, y: 0), label: "A")
+
+        // Then
+        XCTAssertEqual(graph.role(of: vertex1.id), .isolated)
+    }
 }
