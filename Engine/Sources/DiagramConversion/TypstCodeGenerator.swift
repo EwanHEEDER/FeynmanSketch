@@ -33,8 +33,8 @@ public struct TypstCodeGenerator {
             }
         }
 
-        var lines: [String] = [header()]
-        
+        var lines: [String] = [header(from: graph)]
+
         if graph.vertices.isEmpty { // Empty diagram, just close the block
             lines.append(")")
             return lines.joined(separator: "\n")
@@ -149,8 +149,19 @@ public struct TypstCodeGenerator {
         return "edge(\(args.joined(separator: ", "))),"
     }
 
-    private func header() -> String {
-        return """
+    private func header(from diagram: DiagramGraph) -> String {
+
+        if diagram.vertices.isEmpty {
+            return """
+            // Generated with FeynmanSketch alpha version
+
+            #import \"@preview/fletcher:\(fletcherVersion)\" as fletcher: diagram, node, edge
+
+            #diagram(
+                spacing: 1.8em
+            """
+        } else {
+            return """
             // Generated with FeynmanSketch alpha version
 
             #import \"@preview/fletcher:\(fletcherVersion)\" as fletcher: diagram, node, edge
@@ -158,6 +169,7 @@ public struct TypstCodeGenerator {
             #diagram(
                 spacing: 1.8em,
             """
-    }
+        }
 
+    }
 }
