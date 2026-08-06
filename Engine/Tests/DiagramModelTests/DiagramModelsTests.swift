@@ -82,6 +82,58 @@ final class DiagramGraphTests: XCTestCase {
         }
     }
 
+    func testDistanceToSegmentIsZeroForPointOnSegment() {
+        // Given
+        let a = Point(x: 0, y: 0)
+        let b = Point(x: 2, y: 2)
+        let p = Point(x: 1, y: 1) // This point lies on the segment from a to b
+
+        // When
+        let distance = p.distance(toSegmentFrom: a, to: b)
+
+        // Then
+        XCTAssertEqual(distance, 0)
+    }
+
+    func testDistanceToSegmentIsPositiveForPointOffSegment() {
+        // Given
+        let a = Point(x: 0, y: 0)
+        let b = Point(x: 2, y: 2)
+        let p = Point(x: 1, y: 2) // This point does not lie on the segment from a to b
+
+        // When
+        let distance = p.distance(toSegmentFrom: a, to: b)
+
+        // Then
+        XCTAssertGreaterThan(distance, 0)
+    }
+
+    func testDistanceToSegmentIsWellComputed() {
+        // Given
+        let a = Point(x: 0, y: 0)
+        let b = Point(x: 4, y: 0)
+        let p = Point(x: 2, y: 3) // This point is above the segment from a to b
+
+        // When
+        let distance = p.distance(toSegmentFrom: a, to: b)
+
+        // Then
+        XCTAssertEqual(distance, 3)
+    }
+
+    func testDistanceToSegmentWithZeroLengthSegmentFallsBackToPointDistance() {
+    // Given
+    let a = Point(x: 1, y: 1)
+    let b = Point(x: 1, y: 1) // Same point: a degenerate "segment"
+    let p = Point(x: 4, y: 5)
+
+    // When
+    let distance = p.distance(toSegmentFrom: a, to: b)
+
+    // Then
+    XCTAssertEqual(distance, p.distance(to: a))
+}
+
     func testVertexRoleInterior() {
         // Given
         var graph = DiagramGraph()
