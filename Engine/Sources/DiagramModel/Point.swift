@@ -13,7 +13,7 @@ public struct Point: Codable, Equatable {
         return (distX * distX + distY * distY).squareRoot()
     }
 
-    func distance(toSegmentFrom a: Point, to b: Point) -> Double {
+    public func distance(toSegmentFrom a: Point, to b: Point) -> Double {
         let dx = b.x - a.x
         let dy = b.y - a.y
 

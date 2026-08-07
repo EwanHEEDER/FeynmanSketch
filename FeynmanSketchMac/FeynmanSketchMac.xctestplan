@@ -1,0 +1,30 @@
+{
+  "configurations" : [
+    {
+      "id" : "515486AE-050B-4CA7-84D5-2E6C450FFE3E",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "codeCoverage" : false,
+    "performanceAntipatternCheckerEnabled" : true,
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:FeynmanSketchMac.xcodeproj",
+      "identifier" : "7841E929301F46CE00C3173A",
+      "name" : "FeynmanSketchMac"
+    }
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:FeynmanSketchMac.xcodeproj",
+        "identifier" : "7841E9623024AA2F00C3173A",
+        "name" : "FeynmanSketchMacTests"
+      }
+    }
+  ],
+  "version" : 1
+}
