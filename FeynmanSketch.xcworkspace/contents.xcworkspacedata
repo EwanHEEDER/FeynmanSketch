@@ -4,4 +4,7 @@
    <FileRef
       location = "group:FeynmanSketchMac/FeynmanSketchMac.xcodeproj">
    </FileRef>
+   <FileRef
+      location = "group:FeynmanSketchMac/FeynmanSketchMac.xctestplan">
+   </FileRef>
 </Workspace>
