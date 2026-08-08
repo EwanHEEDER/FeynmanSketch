@@ -1,5 +1,9 @@
 //
+<<<<<<< HEAD
 //  HitTesterTests.swift
+=======
+//  FeynmanSketchMacTests.swift
+>>>>>>> main
 //  FeynmanSketchMacTests
 //
 //  Created by HEEDER Ewan on 06/08/2026.
@@ -9,7 +13,7 @@ import Testing
 @testable import FeynmanSketchMac
 @testable import DiagramModel
 
-struct HitTesterTests {
+struct FeynmanSketchMacTests {
 
     @Test func selectsClosestVertexAmongSeveral() {
             var graph = DiagramGraph()
