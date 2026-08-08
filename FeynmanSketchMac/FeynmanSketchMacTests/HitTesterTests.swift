@@ -1,5 +1,9 @@
 //
+<<<<<<< HEAD
+//  HitTesterTests.swift
+=======
 //  FeynmanSketchMacTests.swift
+>>>>>>> main
 //  FeynmanSketchMacTests
 //
 //  Created by HEEDER Ewan on 06/08/2026.
