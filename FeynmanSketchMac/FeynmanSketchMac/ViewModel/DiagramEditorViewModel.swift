@@ -15,7 +15,7 @@ final class DiagramEditorViewModel: ObservableObject {
     @Published var graph: DiagramGraph
     @Published var selection: Selection?
     
-    private var pendingLineStart: Vertex.ID?
+    @Published private(set) var pendingLineStart: Vertex.ID?
     private let hitTester = HitTester()
 
     init(graph: DiagramGraph = DiagramGraph()) {

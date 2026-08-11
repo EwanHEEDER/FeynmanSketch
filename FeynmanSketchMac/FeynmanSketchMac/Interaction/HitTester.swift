@@ -10,7 +10,7 @@ import DiagramModel
 struct HitTester {
     var tolerance: Double
     
-    init (tolerance: Double = 0.3) {
+    init (tolerance: Double = 15) {
         self.tolerance = tolerance
     }
     

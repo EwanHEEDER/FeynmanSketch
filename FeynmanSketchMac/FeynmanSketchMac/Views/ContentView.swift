@@ -8,14 +8,14 @@
 import SwiftUI
 
 struct ContentView: View {
+    @StateObject private var editor = DiagramEditorViewModel()
+    @StateObject private var toolbox = ToolboxViewModel()
+    
     var body: some View {
         VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+            LineTypeToolbar(toolbox: toolbox)
+            DiagramCanvasView(editor: editor, toolbox: toolbox)
         }
-        .padding()
     }
 }
 
