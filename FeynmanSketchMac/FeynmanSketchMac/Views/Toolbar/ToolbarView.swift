@@ -10,6 +10,7 @@ import DiagramModel
 
 struct LineTypeToolbar: View {
     @ObservedObject var toolbox: ToolboxViewModel
+    @ObservedObject var editor: DiagramEditorViewModel
     
     var body: some View {
         HStack {
@@ -32,6 +33,13 @@ struct LineTypeToolbar: View {
             }
             .buttonStyle(.borderedProminent)
             .tint(toolbox.activeTool == .select ? .accentColor : .gray)
+            
+            Button("Delete") {
+                editor.deleteSelection()
+            }
+            .buttonStyle(.borderedProminent)
+            .tint(.red)
+            .disabled(editor.selection == nil)
         }
     }
 }

@@ -13,7 +13,7 @@ struct ContentView: View {
     
     var body: some View {
         VStack {
-            LineTypeToolbar(toolbox: toolbox)
+            LineTypeToolbar(toolbox: toolbox, editor: editor)
             DiagramCanvasView(editor: editor, toolbox: toolbox)
         }
     }
