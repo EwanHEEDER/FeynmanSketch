@@ -14,6 +14,7 @@ struct DiagramCanvasView: View {
     
     var body: some View {
         Canvas {context, size in
+            GridOverlay.draw(in: context, size: size, spacing: CGFloat(editor.gridSpacing))
             drawLines(in: context)
             drawVertices(in: context)
         }
