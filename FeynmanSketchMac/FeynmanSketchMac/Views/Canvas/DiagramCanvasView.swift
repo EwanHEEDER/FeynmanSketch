@@ -45,10 +45,10 @@ struct DiagramCanvasView: View {
                 width: diameter,
                 height: diameter)
             
-            let isSelected = vertex.id == editor.pendingLineStart
+            let isHighLighted = vertex.id == editor.pendingLineStart || editor.selection == .vertex(vertex.id)
             context.stroke(
                 Path(ellipseIn: rect),
-                with: .color(isSelected ? .orange : .blue),
+                with: .color(isHighLighted ? .orange : .blue),
                 lineWidth: 2
             )
         }
@@ -63,7 +63,8 @@ struct DiagramCanvasView: View {
             path.move(to: start.position.cgPoint)
             path.addLine(to: end.position.cgPoint)
             
-            context.stroke(path, with: .color(.black), lineWidth: 1.5)
+            let isSelected = editor.selection == .line(line.id)
+            context.stroke(path, with: .color(isSelected ? .orange : .black), lineWidth: 1.5)
         }
     }
 }

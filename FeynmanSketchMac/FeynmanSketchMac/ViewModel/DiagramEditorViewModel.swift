@@ -62,6 +62,8 @@ final class DiagramEditorViewModel: ObservableObject {
         case .vertex(let vertexID):
             graph.removeVertex(withID: vertexID)
         }
+        
+        self.selection = nil
     }
     
     func cancelPendingLine() {
