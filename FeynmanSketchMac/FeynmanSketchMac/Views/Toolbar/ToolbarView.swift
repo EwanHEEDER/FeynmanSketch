@@ -12,6 +12,9 @@ struct LineTypeToolbar: View {
     @ObservedObject var toolbox: ToolboxViewModel
     @ObservedObject var editor: DiagramEditorViewModel
     
+    @State private var labelText: String = ""
+    @State private var isEditingLabel: Bool = false
+    
     var body: some View {
         HStack {
             Button("Vertex") {
@@ -40,6 +43,24 @@ struct LineTypeToolbar: View {
             .buttonStyle(.borderedProminent)
             .tint(.red)
             .disabled(editor.selection == nil)
+            
+            Button("Label") {
+                labelText = editor.selectionLabel ?? ""
+                isEditingLabel = true
+            }
+            .buttonStyle(.bordered)
+            .disabled(editor.selection == nil)
+            .popover(isPresented: $isEditingLabel) {
+                VStack {
+                    TextField("Label", text: $labelText)
+                    Button("OK") {
+                        editor.setLabelOnSelection(labelText)
+                        isEditingLabel = false
+                    }
+                }
+                .padding()
+            }
         }
+        .padding()
     }
 }
