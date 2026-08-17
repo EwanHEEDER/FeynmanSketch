@@ -21,6 +21,10 @@ struct DiagramCanvasView: View {
         .onTapGesture {location in
             handleTap(at: location)
         }
+        .onChange(of: toolbox.activeTool) {
+            editor.selection = nil
+            editor.cancelPendingLine()
+        }
     }
     
     private func handleTap(at location: CGPoint) {
