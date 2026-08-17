@@ -47,11 +47,19 @@ struct DiagramCanvasView: View {
                 height: diameter)
             
             let isHighLighted = vertex.id == editor.pendingLineStart || editor.selection == .vertex(vertex.id)
+            
             context.stroke(
                 Path(ellipseIn: rect),
                 with: .color(isHighLighted ? .orange : .blue),
                 lineWidth: 2
             )
+            
+            if let label = vertex.label, !label.isEmpty {
+                context.draw(
+                    Text(label).font(.callout),
+                    at: CGPoint(x: center.x, y: center.y - diameter * 1.5)
+                    )
+            }
         }
     }
     
