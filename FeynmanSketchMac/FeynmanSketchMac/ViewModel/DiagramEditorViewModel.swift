@@ -17,13 +17,14 @@ final class DiagramEditorViewModel: ObservableObject {
     
     @Published private(set) var pendingLineStart: Vertex.ID?
     private let hitTester = HitTester()
+    let gridSpacing: Double = 20
 
     init(graph: DiagramGraph = DiagramGraph()) {
         self.graph = graph
     }
     
     func addVertex(at point: Point) {
-        graph.addVertex(at: point)
+        graph.addVertex(at: snapped(point))
     }
     
     func selectElement(at point: Point) {
@@ -68,5 +69,12 @@ final class DiagramEditorViewModel: ObservableObject {
     
     func cancelPendingLine() {
         pendingLineStart = nil
+    }
+    
+    private func snapped(_ point: Point) -> Point {
+        Point(
+            x: (point.x / gridSpacing).rounded() * gridSpacing,
+            y: (point.y / gridSpacing).rounded() * gridSpacing
+        )
     }
 }
