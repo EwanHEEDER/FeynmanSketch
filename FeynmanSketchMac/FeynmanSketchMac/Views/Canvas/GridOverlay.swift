@@ -29,6 +29,6 @@ enum GridOverlay {
             y += spacing
         }
         
-        context.stroke(path, with: .color(.gray.opacity(0.25)), lineWidth: 0.5)
+        context.stroke(path, with: .color(.gray.opacity(0.40)), lineWidth: 0.75)
     }
 }

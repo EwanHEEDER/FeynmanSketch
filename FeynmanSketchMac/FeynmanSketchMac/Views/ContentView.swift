@@ -16,6 +16,7 @@ struct ContentView: View {
             LineTypeToolbar(toolbox: toolbox, editor: editor)
             DiagramCanvasView(editor: editor, toolbox: toolbox)
         }
+        .padding()
     }
 }
 

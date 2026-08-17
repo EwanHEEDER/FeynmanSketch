@@ -68,12 +68,14 @@ struct DiagramCanvasView: View {
             guard let start = editor.graph.vertex(withID: line.startVertexID),
                   let end = editor.graph.vertex(withID: line.endVertexID) else { continue }
             
-            var path = Path()
-            path.move(to: start.position.cgPoint)
-            path.addLine(to: end.position.cgPoint)
-            
             let isSelected = editor.selection == .line(line.id)
-            context.stroke(path, with: .color(isSelected ? .orange : .black), lineWidth: 1.5)
+            let color: Color = isSelected ? .orange : .black
+            let startPoint = start.position.cgPoint
+            let endPoint = end.position.cgPoint
+            
+            LineStyleRenderer.draw(line.type, from: startPoint, to: endPoint, color: color, in: context)
         }
     }
+    
+    
 }
