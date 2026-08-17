@@ -74,6 +74,12 @@ struct DiagramCanvasView: View {
             let endPoint = end.position.cgPoint
             
             LineStyleRenderer.draw(line.type, from: startPoint, to: endPoint, color: color, in: context)
+            
+            if let label = line.label, !label.isEmpty {
+                let midPoint = CGPoint(x: (startPoint.x + endPoint.x) / 2, y: (startPoint.y + endPoint.y) / 2)
+                context.draw(Text(label).font(.callout), at: CGPoint(x: midPoint.x, y: midPoint.y - 15))
+                
+            }
         }
     }
     
