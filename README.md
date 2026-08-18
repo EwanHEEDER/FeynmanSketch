@@ -26,7 +26,7 @@ Le projet est structuré en **4 packages Swift (SPM)**, séparant strictement le
 - [x] Choix de l'architecture (packages, séparation Model/ViewModel/View)
 - [x] Mise en place des packages Swift (`Package.swift`, build fonctionnel)
 - [ ] GUI de dessin (SwiftUI, palette d'outils fermion / photon / gluon / scalaire, macOS uniquement dans un premier temps)
-- [ ] Conversion du dessin en structure de diagramme (nœuds / arêtes) et sérialisation JSON
+- [ ] Conversion du dessin en structure de diagramme (nœuds / arêtes)
 - [x] Génération de code Typst à partir du diagramme (via `fletcher`)
 - [ ] Chargement du JSON dans une structure de diagramme
 - [ ] Documentation
@@ -38,4 +38,5 @@ Le projet est structuré en **4 packages Swift (SPM)**, séparant strictement le
 - [ ] Génération de code LaTeX (en plus de Typst)
 - [ ] Ajout de tags aux objets du diagramme
 - [ ] Export du diagramme en image (PNG, SVG, etc.)
-- [ ] Navigation dans l'historique des diagrammes précédents
+- [ ] et sérialisation JSON
+- [ ] Fonction annuler/rétablir (undo/redo) en stockant un historique d'une dizaine de diagramGraph() sous forme d'une pile de snapshot

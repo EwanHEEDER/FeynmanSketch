@@ -33,6 +33,12 @@ final class DiagramEditorViewModel: ObservableObject {
         self.graph = graph
     }
     
+    func reset() {
+        graph = DiagramGraph()
+        selection = nil
+        pendingLineStart = nil
+    }
+    
     func addVertex(at point: Point) {
         graph.addVertex(at: snapped(point))
     }
