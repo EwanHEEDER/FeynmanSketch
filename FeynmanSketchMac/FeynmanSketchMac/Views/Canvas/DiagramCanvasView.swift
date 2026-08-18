@@ -12,15 +12,32 @@ struct DiagramCanvasView: View {
     @ObservedObject var editor: DiagramEditorViewModel
     @ObservedObject var toolbox: ToolboxViewModel
     
+    @State private var draggedLineID: PropagatorLine.ID?
+    
     var body: some View {
         Canvas {context, size in
             GridOverlay.draw(in: context, size: size, spacing: CGFloat(editor.gridSpacing))
             drawLines(in: context)
             drawVertices(in: context)
+            if toolbox.activeTool == .curvature {
+                drawCurvatureHandles(in: context)
+            }
         }
         .onTapGesture {location in
             handleTap(at: location)
         }
+        .gesture(
+            toolbox.activeTool == .curvature ?
+            DragGesture(minimumDistance: 0)
+                .onChanged { value in
+                    handleCurvatureDrag(value)
+                }
+                .onEnded { _ in
+                    draggedLineID = nil
+                }
+            : nil
+    
+        )
         .onChange(of: toolbox.activeTool) {
             editor.selection = nil
             editor.cancelPendingLine()
@@ -37,11 +54,13 @@ struct DiagramCanvasView: View {
             editor.beginOrCompleteLine(at: point, type: type)
         case .select:
             editor.selectElement(at: point)
+        case .curvature:
+            break
         }
     }
     
     private func drawVertices(in context: GraphicsContext) {
-        let diameter: CGFloat = 10
+        let diameter: CGFloat = CanvasStyle.vertexDiameter
         for vertex in editor.graph.vertices {
             let center = vertex.position.cgPoint
             let rect = CGRect(
@@ -87,5 +106,67 @@ struct DiagramCanvasView: View {
         }
     }
     
+    private func drawCurvatureHandles(in context: GraphicsContext) {
+        let handleDiameter: CGFloat = CanvasStyle.curvaturehandleDiameter
+        for line in editor.graph.lines {
+            guard let start = editor.graph.vertex(withID: line.startVertexID),
+                    let end = editor.graph.vertex(withID: line.endVertexID) else { continue }
+            let midPoint = ArcGeometry.midpointOfArc(from: start.position.cgPoint, to: end.position.cgPoint, curvatureDegrees: line.curvature)
+            
+            let rect = CGRect(
+                x: midPoint.x - handleDiameter / 2,
+                y: midPoint.y - handleDiameter / 2,
+                width: handleDiameter,
+                height: handleDiameter
+            )
+            
+            context.fill(Path(ellipseIn: rect), with: .color(.purple.opacity(0.8)))
+        }
+    }
     
+    private func lineWithControlPoint(near point: CGPoint, tolerance: CGFloat = 12) -> PropagatorLine.ID? {
+        var closestLineID: PropagatorLine.ID?
+        var closestDistance = CGFloat.infinity
+        
+        for line in  editor.graph.lines {
+            guard let start = editor.graph.vertex(withID: line.startVertexID),
+                  let end = editor.graph.vertex(withID: line.endVertexID) else { continue }
+            
+            let midPoint = ArcGeometry.midpointOfArc(from: start.position.cgPoint, to: end.position.cgPoint, curvatureDegrees: line.curvature)
+            let distance = hypot(midPoint.x - point.x, midPoint.y - point.y)
+            
+            if distance < closestDistance {
+                closestDistance = distance
+                closestLineID = line.id
+            }
+        }
+        guard closestDistance <= tolerance else { return nil }
+        return closestLineID
+    }
+    
+    private func handleCurvatureDrag(_ value: DragGesture.Value) {
+        let lineID: PropagatorLine.ID
+        if let existing = draggedLineID {
+            lineID = existing
+        } else {
+            guard let found = lineWithControlPoint(near: value.startLocation) else { return }
+            draggedLineID = found
+            lineID = found
+            
+        }
+        guard let line = editor.graph.lines.first(where: { $0.id == lineID }),
+              let start = editor.graph.vertex(withID: line.startVertexID),
+              let end = editor.graph.vertex(withID: line.endVertexID) else { return }
+        
+        let startPoint = start.position.cgPoint
+        let endPoint = end.position.cgPoint
+        
+        let length = hypot(endPoint.x - startPoint.x, endPoint.y - startPoint.y)
+        
+        let sagitta = ArcGeometry.projectedOffset(mouseLocation: value.location, start: startPoint, end: endPoint)
+        var degrees = ArcGeometry.curvatureDegrees(forSagitta: sagitta, length: Double(length))
+        degrees = ArcGeometry.snappedCurvature(degrees)
+        
+        editor.setCurvature(degrees, forLine: lineID)
+    }
 }

@@ -54,6 +54,14 @@ struct LineTypeToolbar: View {
             .tint(toolbox.activeTool == .select ? .accentColor : .gray)
             
             Button {
+                toolbox.activeTool = .curvature
+            } label: {
+                Image(systemName: "dot.arrowtriangles.up.right.down.left.circle")
+            }
+            .buttonStyle(.borderedProminent)
+            .tint(toolbox.activeTool == .curvature ? .accentColor : .gray)
+            
+            Button {
                 editor.deleteSelection()
             } label: {
                 Image(systemName: "trash")

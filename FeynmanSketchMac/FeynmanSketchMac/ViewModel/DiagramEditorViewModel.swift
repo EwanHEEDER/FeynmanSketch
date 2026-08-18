@@ -105,4 +105,9 @@ final class DiagramEditorViewModel: ObservableObject {
             graph.lines[index].label = label
         }
     }
+    
+    func setCurvature(_ degrees: Double, forLine lineID: PropagatorLine.ID) {
+        guard let index = graph.lines.firstIndex(where: { $0.id == lineID }) else { return }
+        graph.lines[index].curvature = degrees
+    }
 }

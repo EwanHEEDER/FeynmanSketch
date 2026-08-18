@@ -27,7 +27,7 @@ enum LineStyleRenderer {
         path.move(to: startingPoint)
         path.addLine(to: endPoint)
         
-        let style = StrokeStyle(lineWidth: 1.5, dash: [6,4])
+        let style = StrokeStyle(lineWidth: CanvasStyle.lineWidth, dash: [6,4])
         context.stroke(path, with: .color(color), style: style)
     }
     
@@ -36,7 +36,7 @@ enum LineStyleRenderer {
         path.move(to: startingPoint)
         path.addLine(to: endPoint)
         
-        context.stroke(path, with: .color(color), lineWidth: 1.5)
+        context.stroke(path, with: .color(color), lineWidth: CanvasStyle.lineWidth)
         
         // Draw the small arrow indicating particle/antiparticle
         
@@ -60,7 +60,7 @@ enum LineStyleRenderer {
         arrowPath.addLine(to: midPoint)
         arrowPath.addLine(to: rightPoint)
         
-        context.stroke(arrowPath, with: .color(color), lineWidth: 1.5)
+        context.stroke(arrowPath, with: .color(color), lineWidth: CanvasStyle.lineWidth)
     }
     
     private static func drawVectorLine(from startingPoint: CGPoint, to endPoint: CGPoint, color: Color, in context: GraphicsContext) { // Creating successive points following sinus func and add them to line path
@@ -89,7 +89,7 @@ enum LineStyleRenderer {
             path.addLine(to: CGPoint(x: offsetX, y: offsetY))
         }
         
-        context.stroke(path, with: .color(color), lineWidth: 1.5)
+        context.stroke(path, with: .color(color), lineWidth: CanvasStyle.lineWidth)
         
     }
     
@@ -124,7 +124,7 @@ enum LineStyleRenderer {
             } else {
                 path.addLine(to: point)
             }
-            context.stroke(path, with: .color(color), lineWidth: 1.5)
+            context.stroke(path, with: .color(color), lineWidth: CanvasStyle.lineWidth)
         }
     }
 }
