@@ -14,6 +14,7 @@ struct LineTypeToolbar: View {
     
     @State private var labelText: String = ""
     @State private var isEditingLabel: Bool = false
+    @State private var isConfirmingReset: Bool = false
     
     private func lineIcon(for type: LineType) -> some View {
         Canvas { context, size in
@@ -80,6 +81,23 @@ struct LineTypeToolbar: View {
                     }
                 }
                 .padding()
+            }
+            
+            Button {
+                isConfirmingReset = true
+            } label: {
+                Image(systemName: "arrow.counterclockwise")
+            }
+            .buttonStyle(.bordered)
+            .tint(.red)
+            .padding(.leading, 20)
+            .alert("Reset diagram canvas?", isPresented: $isConfirmingReset) {
+                Button("Cancel", role: .cancel) {}
+                Button("Reset", role: .destructive) {
+                    editor.reset()
+                }
+            } message: {
+                Text("This action will delete all diagram vertices and lines.")
             }
         }
         .padding()
