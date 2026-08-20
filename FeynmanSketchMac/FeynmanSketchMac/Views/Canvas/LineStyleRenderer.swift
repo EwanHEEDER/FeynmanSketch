@@ -43,26 +43,35 @@ enum LineStyleRenderer {
     
     private static func drawFermionLine(from startingPoint: CGPoint, to endPoint: CGPoint, curvatureDegrees: Double, color: Color, in context: GraphicsContext) {
         var path = Path()
-        path.move(to: startingPoint)
-        path.addLine(to: endPoint)
+        let steps = 40
+        
+        for i in 0...steps {
+            let t = CGFloat(i) / CGFloat(steps)
+            let (point, _) = ArcGeometry.arcPoint(from: startingPoint, to: endPoint, curvatureDegrees: curvatureDegrees, t: t)
+            
+            if i == 0 {
+                path.move(to: point)
+            } else {
+                path.addLine(to: point)
+            }
+        }
         
         context.stroke(path, with: .color(color), lineWidth: CanvasStyle.lineWidth)
         
         // Draw the small arrow indicating particle/antiparticle
         
-        let midPoint = CGPoint(x: (startingPoint.x + endPoint.x) / 2, y: (startingPoint.y + endPoint.y) / 2)
-        let angle = atan2(endPoint.y - startingPoint.y, endPoint.x - startingPoint.x)
+        let (midPoint, tangentAngle) = ArcGeometry.arcPoint(from: startingPoint, to: endPoint, curvatureDegrees: curvatureDegrees, t: 0.5)
         let arrowLength: CGFloat = 8
         let arrowAngle: CGFloat = .pi / 6
         
         let leftPoint = CGPoint(
-            x: midPoint.x - arrowLength * cos(angle - arrowAngle),
-            y: midPoint.y - arrowLength * sin(angle - arrowAngle)
+            x: midPoint.x - arrowLength * cos(tangentAngle - arrowAngle),
+            y: midPoint.y - arrowLength * sin(tangentAngle - arrowAngle)
         )
         
         let rightPoint = CGPoint(
-            x: midPoint.x - arrowLength * cos(angle + arrowAngle),
-            y: midPoint.y - arrowLength * sin(angle + arrowAngle)
+            x: midPoint.x - arrowLength * cos(tangentAngle + arrowAngle),
+            y: midPoint.y - arrowLength * sin(tangentAngle + arrowAngle)
         )
         
         var arrowPath = Path()
