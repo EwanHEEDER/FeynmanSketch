@@ -31,7 +31,8 @@ final class DiagramEditorViewModel: ObservableObject {
     }
     
     var generatedTypstCode: String {
-        TypstCodeGenerator().generate(from: graph)
+        let scaledGraph = scaleForExport(graph)
+        return TypstCodeGenerator().generate(from: scaledGraph)
     }
 
     init(graph: DiagramGraph = DiagramGraph()) {
@@ -114,5 +115,16 @@ final class DiagramEditorViewModel: ObservableObject {
     func setCurvature(_ degrees: Double, forLine lineID: PropagatorLine.ID) {
         guard let index = graph.lines.firstIndex(where: { $0.id == lineID }) else { return }
         graph.lines[index].curvature = degrees
+    }
+    
+    private func scaleForExport(_ graph: DiagramGraph) -> DiagramGraph {
+        var scaled = graph
+        
+        for i in scaled.vertices.indices {
+            scaled.vertices[i].position.x /= gridSpacing
+            scaled.vertices[i].position.y /= gridSpacing
+        }
+        
+        return scaled
     }
 }

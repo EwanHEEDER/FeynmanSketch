@@ -35,6 +35,7 @@ struct LineTypeToolbar: View {
             } label: {
                 Image(systemName: "circle.fill")
             }
+            .help("Vertex")
             .buttonStyle(.borderedProminent)
             .tint(toolbox.activeTool == .vertex ? .accentColor : .gray)
             
@@ -44,15 +45,16 @@ struct LineTypeToolbar: View {
                 } label: {
                     lineIcon(for: type)
                 }
+                .help(type.displayName)
                 .buttonStyle(.borderedProminent)
                 .tint(toolbox.activeTool == .line(type) ? .accentColor : .gray)
             }
-            
             Button {
                 toolbox.activeTool = .select
             } label: {
                 Image(systemName: "cursorarrow")
             }
+            .help("Select")
             .buttonStyle(.borderedProminent)
             .tint(toolbox.activeTool == .select ? .accentColor : .gray)
             
@@ -61,6 +63,7 @@ struct LineTypeToolbar: View {
             } label: {
                 Image(systemName: "dot.arrowtriangles.up.right.down.left.circle")
             }
+            .help("Set curvature")
             .buttonStyle(.borderedProminent)
             .tint(toolbox.activeTool == .curvature ? .accentColor : .gray)
             
@@ -69,6 +72,7 @@ struct LineTypeToolbar: View {
             } label: {
                 Image(systemName: "trash")
             }
+            .help("Delete selection")
             .buttonStyle(.borderedProminent)
             .tint(.red)
             .disabled(editor.selection == nil)
@@ -79,6 +83,7 @@ struct LineTypeToolbar: View {
             } label: {
                 Image(systemName: "pencil")
             }
+            .help("Set label")
             .buttonStyle(.bordered)
             .disabled(editor.selection == nil)
             .popover(isPresented: $isEditingLabel) {
@@ -99,6 +104,7 @@ struct LineTypeToolbar: View {
             } label: {
                 Image(systemName: "arrow.counterclockwise")
             }
+            .help("Reset canvas")
             .buttonStyle(.bordered)
             .tint(.red)
             .padding(.leading, 20)
@@ -111,11 +117,9 @@ struct LineTypeToolbar: View {
                 Text("This action will delete all diagram vertices and lines.")
             }
             
-            Button {
+            Button("Generate") {
                 generatedCode = editor.generatedTypstCode
                 isCodePanelVisible = true
-            } label: {
-                Image(systemName: "curlybraces")
             }
             .buttonStyle(.bordered)
             .padding(.leading, 20)

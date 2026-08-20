@@ -13,7 +13,7 @@ struct TypstCodeView: View {
     @Binding var isVisible: Bool
     
     var body: some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .center) {
             ScrollView {
                 Text(code)
                     .font(.system(.body, design: .monospaced))
@@ -21,23 +21,27 @@ struct TypstCodeView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding()
             }
+            .background(Color.black.opacity(0.15))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .padding()
             
             Button {
                 NSPasteboard.general.clearContents()
                 NSPasteboard.general.setString(code, forType: .string)
             } label: {
-                Label("Copier dans le presse-papier", systemImage: "doc.on.clipboard")
+                Image(systemName: "doc.on.clipboard")
             }
+            .help("Copy code")
             .padding(.bottom)
             
             Button {
                 isVisible = false
             } label: {
-                Text("Hide result panel")
+                Text("Hide panel")
             }
             .padding(.bottom)
         }
         .frame(width: 320)
-        .background(Color(nsColor: .textBackgroundColor))
+        .background(Color.gray.opacity(0.15))
     }
 }
