@@ -20,7 +20,7 @@ struct LineTypeToolbar: View {
         Canvas { context, size in
             let start = CGPoint(x: 4, y: size.height / 2)
             let end = CGPoint(x: size.width - 4, y: size.height / 2)
-            LineStyleRenderer.draw(type, from: start, to: end, color: .primary, in: context)
+            LineStyleRenderer.draw(type, from: start, to: end, curvatureDegrees: 0, color: .primary, in: context)
         }
         .frame(width: 50, height: 16)
     }
@@ -52,6 +52,14 @@ struct LineTypeToolbar: View {
             }
             .buttonStyle(.borderedProminent)
             .tint(toolbox.activeTool == .select ? .accentColor : .gray)
+            
+            Button {
+                toolbox.activeTool = .curvature
+            } label: {
+                Image(systemName: "dot.arrowtriangles.up.right.down.left.circle")
+            }
+            .buttonStyle(.borderedProminent)
+            .tint(toolbox.activeTool == .curvature ? .accentColor : .gray)
             
             Button {
                 editor.deleteSelection()

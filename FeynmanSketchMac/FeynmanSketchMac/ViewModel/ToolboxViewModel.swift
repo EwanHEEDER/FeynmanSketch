@@ -14,6 +14,7 @@ final class ToolboxViewModel: ObservableObject {
         case vertex
         case line(LineType)
         case select
+        case curvature
     }
     
     @Published var activeTool: Tool = .select

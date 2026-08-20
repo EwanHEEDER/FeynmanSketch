@@ -34,6 +34,7 @@ Le projet est structuré en **4 packages Swift (SPM)**, séparant strictement le
 ## Développements futurs
 
 - [ ] Portage de la GUI sur Linux
+- [ ] Déplacement sur le canvas
 - [ ] Compilation du code généré directement dans l'outil (aperçu du résultat)
 - [ ] Génération de code LaTeX (en plus de Typst)
 - [ ] Ajout de tags aux objets du diagramme
