@@ -9,29 +9,39 @@ import SwiftUI
 import DiagramModel
 
 enum LineStyleRenderer {
-    static func draw(_ type : LineType, from start: CGPoint, to end: CGPoint, color: Color, in context: GraphicsContext) {
+    static func draw(_ type : LineType, from start: CGPoint, to end: CGPoint, curvatureDegrees: Double, color: Color, in context: GraphicsContext) {
         switch type {
         case .scalar:
-            drawScalarLine(from: start, to: end, color: color, in: context)
+            drawScalarLine(from: start, to: end, curvatureDegrees: curvatureDegrees, color: color, in: context)
         case .fermion:
-            drawFermionLine(from: start, to: end, color: color, in: context)
+            drawFermionLine(from: start, to: end, curvatureDegrees: curvatureDegrees, color: color, in: context)
         case .vector:
-            drawVectorLine(from: start, to: end, color: color, in: context)
+            drawVectorLine(from: start, to: end, curvatureDegrees: curvatureDegrees, color: color, in: context)
         case .gluon:
-            drawGluonLine(from: start, to: end, color: color, in: context)
+            drawGluonLine(from: start, to: end, curvatureDegrees: curvatureDegrees, color: color, in: context)
         }
     }
     
-    private static func drawScalarLine(from startingPoint: CGPoint, to endPoint: CGPoint, color: Color, in context: GraphicsContext) {
+    private static func drawScalarLine(from startingPoint: CGPoint, to endPoint: CGPoint, curvatureDegrees: Double, color: Color, in context: GraphicsContext) {
         var path = Path()
-        path.move(to: startingPoint)
-        path.addLine(to: endPoint)
+        let steps = 40
+        
+        for i in 0...steps {
+            let t = CGFloat(i) / CGFloat(steps)
+            let (point, _) = ArcGeometry.arcPoint(from: startingPoint, to: endPoint, curvatureDegrees: curvatureDegrees, t: t)
+            
+            if i == 0 {
+                path.move(to: point)
+            } else {
+                path.addLine(to: point)
+            }
+        }
         
         let style = StrokeStyle(lineWidth: CanvasStyle.lineWidth, dash: [6,4])
         context.stroke(path, with: .color(color), style: style)
     }
     
-    private static func drawFermionLine(from startingPoint: CGPoint, to endPoint: CGPoint, color: Color, in context: GraphicsContext) {
+    private static func drawFermionLine(from startingPoint: CGPoint, to endPoint: CGPoint, curvatureDegrees: Double, color: Color, in context: GraphicsContext) {
         var path = Path()
         path.move(to: startingPoint)
         path.addLine(to: endPoint)
@@ -63,7 +73,7 @@ enum LineStyleRenderer {
         context.stroke(arrowPath, with: .color(color), lineWidth: CanvasStyle.lineWidth)
     }
     
-    private static func drawVectorLine(from startingPoint: CGPoint, to endPoint: CGPoint, color: Color, in context: GraphicsContext) { // Creating successive points following sinus func and add them to line path
+    private static func drawVectorLine(from startingPoint: CGPoint, to endPoint: CGPoint, curvatureDegrees: Double, color: Color, in context: GraphicsContext) { // Creating successive points following sinus func and add them to line path
         let dx = endPoint.x - startingPoint.x
         let dy = endPoint.y - startingPoint.y
         let length = sqrt(dx * dx + dy * dy)
@@ -93,7 +103,7 @@ enum LineStyleRenderer {
         
     }
     
-    private static func drawGluonLine(from startingPoint: CGPoint, to endPoint: CGPoint, color: Color, in context: GraphicsContext) {
+    private static func drawGluonLine(from startingPoint: CGPoint, to endPoint: CGPoint, curvatureDegrees: Double, color: Color, in context: GraphicsContext) {
         let dx = endPoint.x - startingPoint.x
         let dy = endPoint.y - startingPoint.y
         let length = sqrt(dx * dx + dy * dy)

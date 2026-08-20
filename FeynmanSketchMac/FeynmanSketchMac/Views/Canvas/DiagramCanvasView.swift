@@ -96,7 +96,7 @@ struct DiagramCanvasView: View {
             let startPoint = start.position.cgPoint
             let endPoint = end.position.cgPoint
             
-            LineStyleRenderer.draw(line.type, from: startPoint, to: endPoint, color: color, in: context)
+            LineStyleRenderer.draw(line.type, from: startPoint, to: endPoint, curvatureDegrees: line.curvature, color: color, in: context)
             
             if let label = line.label, !label.isEmpty {
                 let midPoint = CGPoint(x: (startPoint.x + endPoint.x) / 2, y: (startPoint.y + endPoint.y) / 2)
