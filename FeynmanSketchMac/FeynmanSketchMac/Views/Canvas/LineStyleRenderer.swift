@@ -83,29 +83,30 @@ enum LineStyleRenderer {
     }
     
     private static func drawVectorLine(from startingPoint: CGPoint, to endPoint: CGPoint, curvatureDegrees: Double, color: Color, in context: GraphicsContext) { // Creating successive points following sinus func and add them to line path
-        let dx = endPoint.x - startingPoint.x
-        let dy = endPoint.y - startingPoint.y
-        let length = sqrt(dx * dx + dy * dy)
-        let angle = atan2(dy, dx)
         
+        let totalLength = ArcGeometry.arcLength(from: startingPoint, to: endPoint, curvatureDegrees: curvatureDegrees)
         let amplitude: CGFloat = 4
         let wavelength: CGFloat = 12
+        let steps = max(Int(totalLength / 2), 1)
         
         var path = Path()
-        let steps = max(Int(length / 2), 1)
-        path.move(to: startingPoint)
         
-        for i in 1...steps {
+        for i in 0...steps {
             let t = CGFloat(i) / CGFloat(steps)
-            let distanceAlong = t * length
+            let (basepoint, tangentAngle) = ArcGeometry.arcPoint(from: startingPoint, to: endPoint, curvatureDegrees: curvatureDegrees, t: t)
+            
+            let distanceAlong = t * CGFloat(totalLength)
             let perpendicularOffset = amplitude * sin(2 * .pi * distanceAlong / wavelength)
             
-            let baseX = startingPoint.x + distanceAlong * cos(angle)
-            let baseY = startingPoint.y + distanceAlong * sin(angle)
-            let offsetX = baseX - perpendicularOffset * sin(angle)
-            let offsetY = baseY + perpendicularOffset * cos(angle)
+            let offsetX = basepoint.x - perpendicularOffset * sin(tangentAngle)
+            let offsetY = basepoint.y + perpendicularOffset * cos(tangentAngle)
             
-            path.addLine(to: CGPoint(x: offsetX, y: offsetY))
+            let point = CGPoint(x: offsetX, y: offsetY)
+            if i == 0 {
+                path.move(to: point)
+            } else {
+                path.addLine(to: point)
+            }
         }
         
         context.stroke(path, with: .color(color), lineWidth: CanvasStyle.lineWidth)
@@ -113,29 +114,29 @@ enum LineStyleRenderer {
     }
     
     private static func drawGluonLine(from startingPoint: CGPoint, to endPoint: CGPoint, curvatureDegrees: Double, color: Color, in context: GraphicsContext) {
-        let dx = endPoint.x - startingPoint.x
-        let dy = endPoint.y - startingPoint.y
-        let length = sqrt(dx * dx + dy * dy)
-        let angle = atan2(dy, dx)
         
+        let totalLength = ArcGeometry.arcLength(from: startingPoint, to: endPoint, curvatureDegrees: curvatureDegrees)
         let radius: CGFloat = 7
-        let loopsCount: CGFloat = max(length / 15, 1)
-        let advancePerRadian = length / (loopsCount * .pi * 2)
+        let loopsCount: CGFloat = max(totalLength / 15, 1)
+        let advancePerRadian = totalLength / (loopsCount * .pi * 2)
         let steps = max(Int(loopsCount * 40), 1)
         
         var path = Path()
-        path.move(to: startingPoint)
         
         for i in 0...steps {
-            let t = CGFloat(i)  / CGFloat(steps) * loopsCount * 2 * .pi
+            let tRaw = CGFloat(i)  / CGFloat(steps) * loopsCount * 2 * .pi
             
-            let localX = advancePerRadian * t + radius * cos(t)
-            let localY = radius * sin(t)
+            // Local position in trochoidal frame
+            let localX = advancePerRadian * tRaw + radius * cos(tRaw)
+            let localY = radius * sin(tRaw)
             
-            let worldX  = startingPoint.x + localX * cos(angle) - localY * sin(angle)
-            let worldY  = startingPoint.y + localX * sin(angle) + localY * cos(angle)
+            // line abscissa of this point
+            let tNormalized = min(max(localX / CGFloat(totalLength), 0), 1)
+            let (basePoint, tangentAngle) = ArcGeometry.arcPoint(from: startingPoint, to: endPoint, curvatureDegrees: curvatureDegrees, t: tNormalized)
             
-            
+            // Project from local frame to canvas frame
+            let worldX  = basePoint.x - localY * sin(tangentAngle)
+            let worldY  = basePoint.y + localY * cos(tangentAngle)
             
             let point = CGPoint(x: worldX, y: worldY)
             if i == 0 {
@@ -143,7 +144,8 @@ enum LineStyleRenderer {
             } else {
                 path.addLine(to: point)
             }
-            context.stroke(path, with: .color(color), lineWidth: CanvasStyle.lineWidth)
         }
+        
+        context.stroke(path, with: .color(color), lineWidth: CanvasStyle.lineWidth)
     }
 }
