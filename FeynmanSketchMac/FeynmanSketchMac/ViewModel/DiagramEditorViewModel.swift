@@ -6,6 +6,7 @@
 //
 
 import DiagramModel
+import DiagramConversion
 import Combine
 
 
@@ -27,6 +28,10 @@ final class DiagramEditorViewModel: ObservableObject {
         case .line(let lineID):
             return graph.lines.first(where: { $0.id == lineID})?.label
         }
+    }
+    
+    var generatedTypstCode: String {
+        TypstCodeGenerator().generate(from: graph)
     }
 
     init(graph: DiagramGraph = DiagramGraph()) {

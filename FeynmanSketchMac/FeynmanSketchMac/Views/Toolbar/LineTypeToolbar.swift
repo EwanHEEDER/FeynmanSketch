@@ -16,6 +16,9 @@ struct LineTypeToolbar: View {
     @State private var isEditingLabel: Bool = false
     @State private var isConfirmingReset: Bool = false
     
+    @Binding var isCodePanelVisible: Bool
+    @Binding var generatedCode: String
+    
     private func lineIcon(for type: LineType) -> some View {
         Canvas { context, size in
             let start = CGPoint(x: 4, y: size.height / 2)
@@ -107,6 +110,15 @@ struct LineTypeToolbar: View {
             } message: {
                 Text("This action will delete all diagram vertices and lines.")
             }
+            
+            Button {
+                generatedCode = editor.generatedTypstCode
+                isCodePanelVisible = true
+            } label: {
+                Image(systemName: "curlybraces")
+            }
+            .buttonStyle(.bordered)
+            .padding(.leading, 20)
         }
         .padding()
     }
