@@ -8,6 +8,7 @@
 import CoreGraphics
 import DiagramModel
 
+/// Allows to easily convert ``Point`` to ``CGPoint`` and vice versa
 extension Point {
     init(_ cgPoint: CGPoint) {
         self.init(x: cgPoint.x, y: cgPoint.y)
