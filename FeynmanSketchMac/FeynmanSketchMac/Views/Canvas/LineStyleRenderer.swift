@@ -8,7 +8,18 @@
 import SwiftUI
 import DiagramModel
 
+/// Draws a ``PropagatorLine``'s visual style along an arc between two points, possibly with a non-zero curvature.
+///
+/// Every style advances along the arc using its true arc length via ``ArcGeometry``, to keep decorations flowing smoothly without discontinuity in phase.
 enum LineStyleRenderer {
+    /// Draws a line of the given type between two points, calling the corresponding function and following the specified curvature
+    ///  - Parameters:
+    ///         - type: which style to use for the drawing.
+    ///         - start: starting point of the arc.
+    ///         - end: ending point of the arc.
+    ///         - curvatureDegrees: bend angle of the arc, in degrees. `0` for a straight line.
+    ///         - color: the stroke color to use.
+    ///         - context: the graphic context to draw into.
     static func draw(_ type : LineType, from start: CGPoint, to end: CGPoint, curvatureDegrees: Double, color: Color, in context: GraphicsContext) {
         switch type {
         case .scalar:
@@ -22,6 +33,13 @@ enum LineStyleRenderer {
         }
     }
     
+    /// Draws a dashed line following the arc.
+    ///  - Parameters:
+    ///         - startingPoint: starting point of the arc.
+    ///         - endPoint: ending point of the arc.
+    ///         - curvatureDegrees: bend angle of the arc, in degrees. `0` for a straight line.
+    ///         - color: the stroke color to use.
+    ///         - context: the graphic context to draw into.
     private static func drawScalarLine(from startingPoint: CGPoint, to endPoint: CGPoint, curvatureDegrees: Double, color: Color, in context: GraphicsContext) {
         var path = Path()
         let steps = 40
@@ -41,6 +59,15 @@ enum LineStyleRenderer {
         context.stroke(path, with: .color(color), style: style)
     }
     
+    /// Draw a solid line with an arrow at midpoint,  toward the endpoint.
+    ///
+    /// The arrow is oriented using the arc's tangent at its midpoint, to ensure correct alignment even on high curvature arcs.
+    ///  - Parameters:
+    ///         - startingPoint: starting point of the arc.
+    ///         - endPoint: ending point of the arc.
+    ///         - curvatureDegrees: bend angle of the arc, in degrees. `0` for a straight line.
+    ///         - color: the stroke color to use.
+    ///         - context: the graphic context to draw into.
     private static func drawFermionLine(from startingPoint: CGPoint, to endPoint: CGPoint, curvatureDegrees: Double, color: Color, in context: GraphicsContext) {
         var path = Path()
         let steps = 40
@@ -82,6 +109,13 @@ enum LineStyleRenderer {
         context.stroke(arrowPath, with: .color(color), lineWidth: CanvasStyle.lineWidth)
     }
     
+    /// Draws a wavy line, oscillating perpendicularly to the arc's local tangent.
+    ///  - Parameters:
+    ///         - startingPoint: starting point of the arc.
+    ///         - endPoint: ending point of the arc.
+    ///         - curvatureDegrees: bend angle of the arc, in degrees. `0` for a straight line.
+    ///         - color: the stroke color to use.
+    ///         - context: the graphic context to draw into.
     private static func drawVectorLine(from startingPoint: CGPoint, to endPoint: CGPoint, curvatureDegrees: Double, color: Color, in context: GraphicsContext) { // Creating successive points following sinus func and add them to line path
         
         let totalLength = ArcGeometry.arcLength(from: startingPoint, to: endPoint, curvatureDegrees: curvatureDegrees)
@@ -113,6 +147,15 @@ enum LineStyleRenderer {
         
     }
     
+    /// Draws a coiled line, using a trochoid curve advanced along the arc.
+    ///
+    /// The trochoid's own forward motion already takes into account the distance traveled along the arc, hence the arc's position and tangent at a given point are obtained by inverting that forward motion into a fraction of the arc's total length.
+    ///  - Parameters:
+    ///         - startingPoint: starting point of the arc.
+    ///         - endPoint: ending point of the arc.
+    ///         - curvatureDegrees: bend angle of the arc, in degrees. `0` for a straight line.
+    ///         - color: the stroke color to use.
+    ///         - context: the graphic context to draw into.
     private static func drawGluonLine(from startingPoint: CGPoint, to endPoint: CGPoint, curvatureDegrees: Double, color: Color, in context: GraphicsContext) {
         
         let totalLength = ArcGeometry.arcLength(from: startingPoint, to: endPoint, curvatureDegrees: curvatureDegrees)
