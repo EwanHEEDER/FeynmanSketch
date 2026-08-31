@@ -1,43 +1,89 @@
 # FeynmanSketch
+![License: GPL v3](https://img.shields.io/badge/license-GPLv3-blue.svg)
+![Swift](https://img.shields.io/badge/swift-5.10%2B-orange.svg)
+![Platform](https://img.shields.io/badge/platform-macOS%2013%2B-lightgrey.svg)
 
-Outil de génération de code Typst à partir d'un diagramme de Feynman dessiné dans une interface graphique (GUI).
+[![Documentation](https://img.shields.io/badge/doc-DocC-blue.svg)](https://ewanheeder.github.io/FeynmanSketch/)
 
-Le projet est principalement écrit en **Swift**, avec un usage ponctuel de **C** pour les objets de diagramme, et **JSON** comme format de stockage.
+FeynmanSketch is a drawing tool for converting Feynman diagrams into editable Typst source code, using the [fletcher](https://typst.app/universe/package/fletcher)
+package.
 
-## Architecture générale
+The project is designed to be cross-platform: the underlying engine (diagram model and
+Typst code generation) is written in Swift and has no dependency on any particular UI framework or operating system.
+Currently, a native macOS interface (built with SwiftUI) is available; a Linux interface is
+planned for a future release.
 
-1. **Dessin** — une interface graphique permet à l'utilisateur de représenter n'importe quel diagramme de Feynman.
-2. **Conversion** — le dessin est converti en une structure de diagramme (nœuds et arêtes), sérialisable en JSON.
-3. **Génération** — le code Typst est généré à partir de la représentation JSON.
+The goal is speed: sketch a diagram with a few clicks, get clean, human-editable Typst code
+you can drop straight into your document and tweak further if needed.
 
-## Architecture technique
+## Installation
 
-Le projet est structuré en **4 packages Swift (SPM)**, séparant strictement les couches portables des couches spécifiques à la plateforme :
+### macOS
 
-- **`DiagramModel`** — modèle de données du diagramme (nœuds, arêtes, types de particules)
-- **`DiagramConversion`** — conversion du modèle vers la représentation JSON / Typst
-- **`DiagramCompilation`** — appel au binaire `typst` pour générer un aperçu SVG
-- **`FeynmanSketchApp`** — couche vue (SwiftUI), non portable par construction
+Requires macOS 13 or later. No additional software is required. 
 
-**Principe directeur pour la portabilité Linux :** seules les couches *Model* et *ViewModel* (MVVM) sont conçues pour être portables ; la couche *View* sera réécrite intégralement pour chaque plateforme. Les types partagés (comme `Point`, une paire de `Double`) sont définis indépendamment de `CGPoint`/`CGFloat` dès le départ, pour éviter tout verrou macOS dans le code partagé.
+Download the latest `.dmg` from the [Releases](../../releases) page of this repository, open
+it, and drag FeynmanSketch into your Applications folder.
 
-## État d'avancement
+> **Note:** the app is not signed with an Apple Developer certificate. On first launch, macOS
+> will likely block it and show a security warning. To open it:
+> 1. Try to open the app normally (double-click). macOS will block it with a warning dialog.
+> 2. Go to **System Settings > Privacy & Security**, scroll down to the Security section, and
+>    you should see a message about FeynmanSketch being blocked. Click **Open Anyway**.
+> 3. Confirm by clicking **Open** in the dialog that appears.
 
-- [x] Choix de l'architecture (packages, séparation Model/ViewModel/View)
-- [x] Mise en place des packages Swift (`Package.swift`, build fonctionnel)
-- [ ] GUI de dessin (SwiftUI, palette d'outils fermion / photon / gluon / scalaire, macOS uniquement dans un premier temps)
-- [ ] Conversion du dessin en structure de diagramme (nœuds / arêtes)
-- [x] Génération de code Typst à partir du diagramme (via `fletcher`)
-- [ ] Chargement du JSON dans une structure de diagramme
-- [ ] Documentation
+### Linux
 
-## Développements futurs
+Not yet available — a native Linux interface is planned for a future release. See
+[Future improvements](#future-improvements).
 
-- [ ] Portage de la GUI sur Linux
-- [ ] Déplacement sur le canvas + déplacement des noeuds existants (drag and drop)
-- [ ] Compilation du code généré directement dans l'outil (aperçu du résultat)
-- [ ] Génération de code LaTeX (en plus de Typst)
-- [ ] Ajout de tags aux objets du diagramme
-- [ ] Export du diagramme en image (PNG, SVG, etc.)
-- [ ] et sérialisation JSON
-- [ ] Fonction annuler/rétablir (undo/redo) en stockant un historique d'une dizaine de diagramGraph() sous forme d'une pile de snapshot
+## Quick start
+
+The canvas has four tools plus a curvature and delete mode, all accessible from the toolbar:
+
+- **Vertex** — tap the canvas to place a vertex, snapped to the nearest grid node.
+- **Line** (one button per style: fermion, vector, gluon, scalar) — tap a first vertex, then a
+  second one, to draw a line of that type between them. Tapping the same vertex twice cancels
+  the line in progress, as well as changing the line type mid-draw.
+- **Select** — tap a vertex or line to select it. A selected element can be deleted or
+  relabeled using the toolbar buttons.
+- **Curvature** — reveals a small draggable handle at the midpoint of every line. Drag a
+  handle to bend that line; the angle snaps to round values (0°, ±45°, ±90°) when close enough.
+
+- **Delete** — delete selected object. Deleting a vertex also deletes all lines connected to it.
+- **Edit label** — edit label of the selected object.
+- **Reset** — return to empty canvas.
+
+Once your diagram looks right, press **Generate** to produce the corresponding Typst/fletcher
+code in a side panel. You can then copy it in your clipboard.
+
+## Developer documentation
+
+The engine (`DiagramModel` and `DiagramConversion`) is fully documented. A generated, browsable version is available at:
+
+**[https://ewanheeder.github.io/FeynmanSketch/](https://ewanheeder.github.io/FeynmanSketch/)**
+
+## Development
+
+FeynmanSketch is a monorepo with two parts:
+
+- `Engine/` — a portable Swift package (no UI dependencies), containing the diagram model and
+  Typst code generator. See the [developer documentation](#developer-documentation) above.
+- `FeynmanSketchMac/` — the native macOS interface, built with SwiftUI, referencing `Engine`
+  as a local Swift package.
+
+Following [the licence](#licence), I provide XCode workspace `FeynmanSketch.xcworkspace` to make easier for anyone to work on this project.
+
+## Licence
+
+FeynmanSketch is licensed under the [GNU General Public License v3.0](LICENSE). You are free
+to use, modify, and share this project, provided that any derivative work remains free and is
+distributed under the same licence.
+
+## Future improvements
+
+- [ ] **Linux interface**, reusing the same portable `Engine` package.
+- [ ] **Undo/redo** for drawing actions (adding/removing a vertex or line), excluding the full
+  canvas reset.
+- [ ] **Live compiled preview**, using the local `typst` binary to render the diagram as it is
+  being edited, rather than only exporting source code.
