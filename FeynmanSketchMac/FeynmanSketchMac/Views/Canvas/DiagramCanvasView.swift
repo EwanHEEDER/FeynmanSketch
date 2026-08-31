@@ -8,10 +8,17 @@
 import SwiftUI
 import DiagramModel
 
+/// The canvas where the diagram is drawn and edited.
+///
+/// This view is the bridge between user interaction and the two ViewModels: it reads ``ToolboxViewModel/activeTool`` to decide what a gesture should do and calls the corresponding method on ``DiagramEditorViewModel``. The two ViewModels then remain independent from each other.
 struct DiagramCanvasView: View {
+    /// The diagram editor this canvas reads and acts on.
     @ObservedObject var editor: DiagramEditorViewModel
+    /// The toolbox this canvas reads the active tool from.
     @ObservedObject var toolbox: ToolboxViewModel
-    
+    /// The line currently being dragged, if any.
+    ///
+    /// Set on the first `.onChanged` of a drag, and used for subsequent updates.
     @State private var draggedLineID: PropagatorLine.ID?
     
     var body: some View {
@@ -44,6 +51,8 @@ struct DiagramCanvasView: View {
         }
     }
     
+    /// Executes the correct action for a user's tap, based on the active tool.
+    ///  - Parameter location: the tapped location, in the canvas' local coordinate system.
     private func handleTap(at location: CGPoint) {
         let point = Point(location)
         
@@ -59,6 +68,7 @@ struct DiagramCanvasView: View {
         }
     }
     
+    /// Draws every vertex in the current diagram, highlighting the one involved in an in-progress line, or currently selected.
     private func drawVertices(in context: GraphicsContext) {
         let diameter: CGFloat = CanvasStyle.vertexDiameter
         for vertex in editor.graph.vertices {
@@ -86,6 +96,7 @@ struct DiagramCanvasView: View {
         }
     }
     
+    /// Draws every line of the current diagram, using ``LineStyleRenderer`` for the visual style and highlighting the currently selected line, if any.
     private func drawLines(in context: GraphicsContext){
         for line in editor.graph.lines {
             guard let start = editor.graph.vertex(withID: line.startVertexID),
@@ -106,6 +117,7 @@ struct DiagramCanvasView: View {
         }
     }
     
+    /// Draws a small draggable handle on each line of the current diagram, visible only when the `.curvature` tool is active.
     private func drawCurvatureHandles(in context: GraphicsContext) {
         let handleDiameter: CGFloat = CanvasStyle.curvaturehandleDiameter
         for line in editor.graph.lines {
@@ -124,6 +136,13 @@ struct DiagramCanvasView: View {
         }
     }
     
+    /// Finds the line whose curvature control point is closest to a given location, within tolerance.
+    ///
+    /// This has to be separated from ``HitTester`` as the curvature control point is an UI-only concept, it is never a valid ``Selection``.
+    ///  - Parameters:
+    ///         - point: the location to test proximity against.
+    ///         - tolerance: the maximum distance within which a control point is considered to be tapped on.
+    /// - Returns: the identifier of the line corresponding to the aimed control point, or `nil` if no control point falls within tolerance.
     private func lineWithControlPoint(near point: CGPoint, tolerance: CGFloat = 12) -> PropagatorLine.ID? {
         var closestLineID: PropagatorLine.ID?
         var closestDistance = CGFloat.infinity
@@ -144,6 +163,10 @@ struct DiagramCanvasView: View {
         return closestLineID
     }
     
+    /// Handles updates of the curvature drag gesture.
+    ///
+    /// On the first call of the drag gesture, locates which control point is dragged and remembers it in ``draggedLineID``, so subsequent calls keep updating the same line even if the cursor drifts away from the control point.
+    /// - Parameter value: the current state of the drag gesture.
     private func handleCurvatureDrag(_ value: DragGesture.Value) {
         let lineID: PropagatorLine.ID
         if let existing = draggedLineID {

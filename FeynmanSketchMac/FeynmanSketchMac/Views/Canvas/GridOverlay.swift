@@ -7,8 +7,14 @@
 
 import SwiftUI
 
-
+/// Draw a background grid on the canvas, matching the spacing used for vertex snapping.
 enum GridOverlay {
+    
+    /// Draws vertical and horizontal grid lines spaced evenly across the given area.
+    ///  - Parameters:
+    ///         - context: the graphic context to draw the grid into.
+    ///         - size: the size of the area to fill with the grid.
+    ///         - spacing: the distance between two consecutive grid lines, in screen points.
     static func draw(in context: GraphicsContext, size: CGSize, spacing: CGFloat) {
         var path = Path()
         
