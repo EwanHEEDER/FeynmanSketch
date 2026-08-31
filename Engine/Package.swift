@@ -13,6 +13,7 @@ let package = Package(
         .library(name: "DiagramModel", targets: ["DiagramModel"]),
         .library(name: "DiagramConversion", targets: ["DiagramConversion"]),
         .library(name: "DiagramCompilation", targets: ["DiagramCompilation"]),
+        .library(name: "ProjectVersion", targets: ["ProjectVersion"]),
     ],
     dependencies: [
             .package(url: "https://github.com/apple/swift-docc-plugin", from: "1.0.0")
@@ -25,11 +26,12 @@ let package = Package(
         ),
         .target(
             name: "DiagramConversion",
-            dependencies: ["DiagramModel"]
+            dependencies: ["DiagramModel", "ProjectVersion"]
         ),
         .target(
-            name: "DiagramModel",
+            name: "DiagramModel"
         ),
+        .target(name: "ProjectVersion"),
         .testTarget(
             name: "DiagramModelTests",
             dependencies: ["DiagramModel"]
