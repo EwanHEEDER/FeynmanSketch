@@ -1,4 +1,5 @@
 import DiagramModel
+import ProjectVersion
 
 /// Converts a ``DiagramGraph`` into Typst source code that uses the fletcher package.
 
@@ -189,7 +190,7 @@ public struct TypstCodeGenerator {
 
         if diagram.vertices.isEmpty {
             return """
-            // Generated with FeynmanSketch beta version
+            // Generated with FeynmanSketch \(ProjectVersion.current)
 
             #import \"@preview/fletcher:\(fletcherVersion)\" as fletcher: diagram, node, edge
 
@@ -198,7 +199,7 @@ public struct TypstCodeGenerator {
             """
         } else {
             return """
-            // Generated with FeynmanSketch beta version
+            // Generated with FeynmanSketch \(ProjectVersion.current)
 
             #import \"@preview/fletcher:\(fletcherVersion)\" as fletcher: diagram, node, edge
 
