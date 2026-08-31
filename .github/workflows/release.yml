@@ -1,0 +1,48 @@
+name: Build and publish release
+
+on:
+  push:
+    tags:
+      - 'release'
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: sudo xcode-select -switch /Applications/Xcode.app
+
+      - name: Read project version
+        id: version
+        run: |
+          VERSION=$(grep 'public static let current' Engine/Sources/ProjectVersion/Version.swift | sed -E 's/.*"([^"]+)".*/\1/')
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Build app (Release, unsigned)
+        run: |
+          xcodebuild -workspace FeynmanSketch.xcworkspace \
+            -scheme FeynmanSketchMac \
+            -configuration Release \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+
+      - name: Create .dmg
+        run: |
+          APP_PATH="build/Build/Products/Release/FeynmanSketchMac.app"
+          hdiutil create -volname "FeynmanSketch" -srcfolder "$APP_PATH" -ov -format UDZO "FeynmanSketch_v${{ steps.version.outputs.version }}.dmg"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: "v${{ steps.version.outputs.version }}"
+          name: "FeynmanSketch v${{ steps.version.outputs.version }}"
+          files: "FeynmanSketch_*.dmg"
+          generate_release_notes: true
